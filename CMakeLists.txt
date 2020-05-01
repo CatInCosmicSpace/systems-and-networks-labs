@@ -18,3 +18,7 @@ file(GLOB easyloggingpp_src
 # === LAB1, LAB2 ===
 file(GLOB single_frame_src single-frame/*.h single-frame/*.cpp)
 add_executable(single_frame ${single_frame_src} ${easyloggingpp_src})
+
+# === LAB3, LAB4, LAB5 ===
+file(GLOB multi_frame_src multi-frame/*.h multi-frame/*.cpp)
+add_executable(multi_frame ${multi_frame_src} ${easyloggingpp_src})
