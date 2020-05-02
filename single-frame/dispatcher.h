@@ -2,7 +2,7 @@
 #define LABS_DISPATCHER_H
 
 #include "queue_characteristics.h"
-#include "receiver_ready.h"
+#include "input_frame.h"
 
 /*! \brief Основная программа обработки передачи одного информационного кадра.
  *
@@ -40,7 +40,7 @@ private:
     queue_characteristics *cmp;     /*!< Очередь всех принятых кадров с канала */
 
     frame *output;  /*!< Регистр выходных пакетов */
-    receiver_ready *input;
+    input_frame *input;
 
     std::vector<block> blocks;
 

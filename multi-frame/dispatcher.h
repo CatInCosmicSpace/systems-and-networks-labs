@@ -2,7 +2,7 @@
 #define LABS_DISPATCHER_H
 
 #include "queue_characteristics.h"
-#include "receiver_ready.h"
+#include "input_frame.h"
 #include "block.h"
 
 /*! \brief Диспетчер 1.
@@ -43,7 +43,7 @@ private:
     queue_characteristics *cmp;
 
     frame *output;  /*!< Регистр выходных пакетов */
-    receiver_ready *input;
+    input_frame *input;
 
     block *tadr = nullptr;
 

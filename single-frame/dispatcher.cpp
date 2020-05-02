@@ -167,7 +167,7 @@ auto dispatcher::p6() {
     std::cout << "=== Switch to P6 ===" << std::endl;
     mode = 0;
 
-    input = new receiver_ready();
+    input = new input_frame();
 
     auto rr_ns = (output->frame_header >> 1) & 0x07;
     auto rr_nr = rr_ns + 1;

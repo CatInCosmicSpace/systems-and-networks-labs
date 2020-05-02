@@ -201,7 +201,7 @@ auto dispatcher::p6() {
     std::cout << "=== Switch to P6 ===" << std::endl;
     mode = 0;
 
-    input = new receiver_ready();
+    input = new input_frame();
 
     uint8_t reject_type = 0x05;
     input->frame_header = (Z3 << 5) | reject_type;
