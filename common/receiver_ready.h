@@ -12,6 +12,7 @@ struct receiver_ready {
     receiver_ready();
 
     void clear();
+
     void print();
 };
 

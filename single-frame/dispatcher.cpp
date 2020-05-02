@@ -1,12 +1,12 @@
 #include <cmath>
+#include <iostream>
 #include "dispatcher.h"
 #include "frame.h"
-#include "easylogging++.h"
 
-dispatcher::dispatcher(int n1, int n2, int z1, int z2, int m):
+dispatcher::dispatcher(int n1, int n2, int z1, int z2, int m) :
         D(1), N1(n1), N2(n2), m(m), Z1(z1), Z2(z2) {}
 
-void dispatcher::move_blocks(queue_characteristics* from, queue_characteristics* to, int length) {
+void dispatcher::move_blocks(queue_characteristics *from, queue_characteristics *to, int length) {
     if (!from || !to || length <= 0 || from->length == 0)
         return;
 
@@ -56,8 +56,8 @@ void dispatcher::move_blocks(queue_characteristics* from, queue_characteristics*
  * </ol></ul>
  */
 auto dispatcher::p1() {
-    LOG(INFO) << "=== Switch to P1 ===";
-    block* blocks = new block[N1];
+    std::cout << "=== Switch to P1 ===" << std::endl;
+    block *blocks = new block[N1];
 
     free = new queue_characteristics(&blocks[0], &blocks[N1 - 1], N1);
 
@@ -83,8 +83,8 @@ auto dispatcher::p1() {
  *
  */
 auto dispatcher::p2() {
-    LOG(INFO) << "=== Switch to P2 ===";
-    block* current = free->first;
+    std::cout << "=== Switch to P2 ===" << std::endl;
+    block *current = free->first;
     int n = m;
     for (int i = 0; i < N2; ++i) {
         ++n;
@@ -98,7 +98,7 @@ auto dispatcher::p2() {
 /*! \brief Программа P3. Перенос N2 пакетов данных из очереди Oсвоб в очередь Оп32.
  */
 auto dispatcher::p3() {
-    LOG(INFO) << "=== Switch to P3 ===";
+    std::cout << "=== Switch to P3 ===" << std::endl;
     p32 = new queue_characteristics();
     move_blocks(free, p32, N2);
     D++;
@@ -113,7 +113,7 @@ auto dispatcher::p3() {
  * пакета.
  */
 auto dispatcher::p4() {
-    LOG(INFO) << "=== Switch to P4 ===";
+    std::cout << "=== Switch to P4 ===" << std::endl;
     VS = Z1;
     VR = Z2;
     NS = VS;
@@ -127,8 +127,7 @@ auto dispatcher::p4() {
         high ^= frame->data[i];
     }
 
-    uint8_t low = 0;
-    low = frame->frame_header;
+    uint8_t low = frame->frame_header;
 
     for (int i = 0; i < 3; i += 1) {
         low ^= frame->packet_header[i];
@@ -147,15 +146,17 @@ auto dispatcher::p4() {
  * в регистр на передачу в канал.
  */
 auto dispatcher::p5() {
-    LOG(INFO) << "=== Switch to P5 ===";
+    std::cout << "=== Switch to P5 ===" << std::endl;
     repeat = new queue_characteristics();
     move_blocks(p32, repeat, 1);
     mode = 1;
     output = &(repeat->first->frame);
 
-    LOG(INFO) << "Output register:";
+    std::cout << "=== Switch to P1 ===" << std::endl;
+    std::cout << "Output register:" << std::endl;
     output->print();
-    LOG(INFO) << "Repeat queue:";
+    std::cout << "=== Switch to P1 ===" << std::endl;
+    std::cout << "Repeat queue:" << std::endl;
     repeat->first->frame.print();
 
     D++;
@@ -165,7 +166,7 @@ auto dispatcher::p5() {
  * на противоположную сторону информационного кадра “I”.
  */
 auto dispatcher::p6() {
-    LOG(INFO) << "=== Switch to P6 ===";
+    std::cout << "=== Switch to P6 ===" << std::endl;
     mode = 0;
 
     auto rr_ns = (output->frame_header >> 1) & 0x07;
@@ -183,9 +184,9 @@ auto dispatcher::p6() {
  * очереди Освоб.
  */
 auto dispatcher::p7() {
-    LOG(INFO) << "=== Switch to P7 ===";
+    std::cout << "=== Switch to P7 ===" << std::endl;
 
-    block* first = free->first;
+    block *first = free->first;
     first->frame.clear();
     first->frame.frame_header = input->frame_header;
 
@@ -195,7 +196,7 @@ auto dispatcher::p7() {
 /*! \brief Программа P8. Перенос принятого кадра RR из Освоб в очередь Окпм.
  */
 auto dispatcher::p8() {
-    LOG(INFO) << "=== Switch to P8 ===";
+    std::cout << "=== Switch to P8 ===" << std::endl;
     cmp = new queue_characteristics();
 
     move_blocks(free, cmp, 1);
@@ -209,16 +210,14 @@ auto dispatcher::p8() {
 /*! \brief Программа P9. Проверка правильного приема переданного ранее кадра “I” и находящегося в очереди повтора Оповт.
  */
 auto dispatcher::p9() {
-    LOG(INFO) << "=== Switch to P9 ===";
+    std::cout << "=== Switch to P9 ===" << std::endl;
     unsigned char rr_ns = (repeat->first->frame.frame_header >> 1) & 0x07;
     unsigned char rr_nr = (cmp->first->frame.frame_header >> 5) & 0x07;
 
-    LOG(INFO) << "NS = " << (int)rr_ns;
-    LOG(INFO) << "NR = " << (int)rr_nr;
+    std::cout << "NS = " << (int) rr_ns << std::endl;
+    std::cout << "NR = " << (int) rr_nr << std::endl;
 
-    if (rr_ns == rr_nr - 1) {
-        LOG(INFO) << "NR equals to NS + 1";
-    } else {
+    if (rr_ns != rr_nr - 1) {
         throw std::exception();
     }
     D++;
@@ -227,7 +226,7 @@ auto dispatcher::p9() {
 /*! \brief Программа P10. Считывание кадров “RR” из очереди Окпм и “I” из Оповт и установка их в очередь Освоб.
  */
 auto dispatcher::p10() {
-    LOG(INFO) << "=== Switch to P10 ===";
+    std::cout << "=== Switch to P10 ===" << std::endl;
     move_blocks(cmp, free, 1);
     free->last->frame.clear();
     move_blocks(repeat, free, 1);
@@ -245,7 +244,7 @@ auto dispatcher::p10() {
 /*! \brief Программа P11. Установление режима передачи очередного информационного кадра “I” в канал.
  */
 auto dispatcher::p11() {
-    LOG(INFO) << "=== Switch to P11 ===";
+    std::cout << "=== Switch to P11 ===" << std::endl;
     mode = 1;
 
     D++;
@@ -257,19 +256,31 @@ auto dispatcher::p11() {
  * одного информационного кадра.
  */
 void dispatcher::disp1() {
-    LOG(INFO) << "=== Switch to Disp1 ===";
+    std::cout << "=== Switch to DISP1 ===" << std::endl;
     auto need_break = false;
     while (!need_break) {
         switch (D) {
-            case 1: p1(); break;
-            case 2: p2(); break;
-            case 3: p3(); break;
-            case 4: p4(); break;
-            case 5: p5(); break;
-            default: need_break = true; break;
+            case 1:
+                p1();
+                break;
+            case 2:
+                p2();
+                break;
+            case 3:
+                p3();
+                break;
+            case 4:
+                p4();
+                break;
+            case 5:
+                p5();
+                break;
+            default:
+                need_break = true;
+                break;
         }
     }
-    LOG(INFO) << "Exiting...";
+    std::cout << "Exiting..." << std::endl;
 }
 
 /*! \brief Диспетчер 2. Программа приема c канала кадра “RR”
@@ -278,18 +289,32 @@ void dispatcher::disp1() {
  * в ответ на передачу кадра “I” при выполнении лабораторной работы №1.
  */
 void dispatcher::disp2() {
-    LOG(INFO) << "=== Switch to Disp2 ===";
+    std::cout << "=== Switch to DISP2 ===" << std::endl;
     auto need_break = false;
     while (!need_break) {
         switch (D) {
-            case 6: p6(); break;
-            case 7: p7(); break;
-            case 8: p8(); break;
-            case 9: p9(); break;
-            case 10: p10(); break;
-            case 11: p11(); break;
-            default: need_break = true; break;
+            case 6:
+                p6();
+                break;
+            case 7:
+                p7();
+                break;
+            case 8:
+                p8();
+                break;
+            case 9:
+                p9();
+                break;
+            case 10:
+                p10();
+                break;
+            case 11:
+                p11();
+                break;
+            default:
+                need_break = true;
+                break;
         }
     }
-    LOG(INFO) << "Exiting...";
+    std::cout << "Exiting..." << std::endl;
 }

@@ -1,8 +1,8 @@
 ﻿#include <algorithm>
 #include <bitset>
 #include <iomanip>
+#include <iostream>
 #include "frame.h"
-#include "easylogging++.h"
 
 frame::frame() {
     clear();
@@ -16,17 +16,17 @@ void frame::clear() {
 }
 
 void frame::print() {
-    LOG(INFO) << "Frame information:    ";
-    LOG(INFO) << "Packet header:        "
-                << std::bitset<8>(packet_header[0]) << " "
-                << std::bitset<8>(packet_header[1]) << " "
-                << std::bitset<8>(packet_header[2]);
-    LOG(INFO) << "Frame header:         " << std::bitset<8>(frame_header);
+    std::cout << "Frame information:    " << std::endl;
+    std::cout << "Packet header:        "
+              << std::bitset<8>(packet_header[0]) << " "
+              << std::bitset<8>(packet_header[1]) << " "
+              << std::bitset<8>(packet_header[2]) << std::endl;
+    std::cout << "Frame header:         " << std::bitset<8>(frame_header) << std::endl;
     std::stringstream data_string;
     for (auto i : data)
         data_string << "0x" << std::setfill('0') << std::setw(2) << std::right << std::hex << int(i) << " ";
-    LOG(INFO) << "Data:                 " << std::endl << data_string.str();
-    LOG(INFO) << "Control:              "
-                << std::bitset<8>(control[0]) << " "
-                << std::bitset<8>(control[1]);
+    std::cout << "Data:                 " << std::endl << data_string.str() << std::endl;
+    std::cout << "Control:              "
+              << std::bitset<8>(control[0]) << " "
+              << std::bitset<8>(control[1]) << std::endl;
 }

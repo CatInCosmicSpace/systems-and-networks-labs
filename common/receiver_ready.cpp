@@ -1,4 +1,4 @@
-﻿#include <easylogging++.h>
+﻿#include <iostream>
 #include "receiver_ready.h"
 
 receiver_ready::receiver_ready() {
@@ -11,6 +11,6 @@ void receiver_ready::clear() {
 }
 
 void receiver_ready::print() {
-    LOG(INFO) << "Header:   " << std::bitset<8>(frame_header);
-    LOG(INFO) << "Control:  " << std::bitset<8>(control[0]) << " " << std::bitset<8>(control[1]);
+    std::cout << "Header:   " << std::bitset<8>(frame_header) << std::endl;
+    std::cout << "Control:  " << std::bitset<8>(control[0]) << " " << std::bitset<8>(control[1]) << std::endl;
 }

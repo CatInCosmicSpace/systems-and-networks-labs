@@ -1,9 +1,6 @@
-#include "easylogging++.h"
 #include "dispatcher.h"
 
-INITIALIZE_EASYLOGGINGPP
-
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     auto d = dispatcher(15, 7, 0, 0, 2);
     d.disp1();
     d.disp2();

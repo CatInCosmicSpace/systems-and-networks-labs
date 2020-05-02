@@ -4,14 +4,16 @@
 #include "block.h"
 
 struct queue_characteristics {
-    block* first;
-    block* last;
+    block *first;
+    block *last;
     size_t length;
 
     queue_characteristics();
-    queue_characteristics(block*, block*, size_t);
+
+    queue_characteristics(block *, block *, size_t);
 
     void clear();
+
     void print();
 };
 

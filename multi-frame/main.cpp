@@ -1,7 +1,7 @@
 #include "dispatcher.h"
 
-int main(int argc, char* argv[]) {
-    auto d = dispatcher(20, 8, 2, 1, 3, 1, 3);
+int main(int argc, char *argv[]) {
+    auto d = dispatcher(15, 7, 0, 0, 1, 2, 4);
     d.disp1();
     d.disp2();
 
