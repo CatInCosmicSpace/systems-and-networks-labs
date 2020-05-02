@@ -152,10 +152,8 @@ auto dispatcher::p5() {
     mode = 1;
     output = &(repeat->first->_frame);
 
-    std::cout << "=== Switch to P1 ===" << std::endl;
     std::cout << "Output register:" << std::endl;
     output->print();
-    std::cout << "=== Switch to P1 ===" << std::endl;
     std::cout << "Repeat queue:" << std::endl;
     repeat->first->_frame.print();
 
@@ -169,6 +167,7 @@ auto dispatcher::p6() {
     std::cout << "=== Switch to P6 ===" << std::endl;
     mode = 0;
 
+    std::cout << "OUTPUT IS" << output << std::endl;
     auto rr_ns = (output->frame_header >> 1) & 0x07;
     auto rr_nr = rr_ns + 1;
 
