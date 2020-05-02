@@ -15,6 +15,6 @@ void block::print() {
     std::cout << "Previous address: " << _previous << std::endl;
     std::cout << "Current address: " << this << std::endl;
     std::cout << "Next address:     " << _next << std::endl;
-    std::cout << "Frame:";
+    std::cout << "Frame: ";
     _frame.print();
 }

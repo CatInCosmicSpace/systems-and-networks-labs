@@ -235,7 +235,9 @@ auto single_frame_handler::p10() {
     cmp->clear();
 
     free->print();
+    std::cout << "Last but one element: " << std::endl;
     free->last->_previous->print();
+    std::cout << "Last element: " << std::endl;
     free->last->print();
 
     D++;
