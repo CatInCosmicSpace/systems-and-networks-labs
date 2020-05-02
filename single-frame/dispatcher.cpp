@@ -173,9 +173,12 @@ auto dispatcher::p6() {
     auto rr_nr = rr_ns + 1;
 
     input->frame_header = (rr_nr << 5) | 1;
+    std::cout << "FRAME_HEADER" << std::endl;
     input->control[1] = input->frame_header;
+    std::cout << "INPUT" << std::endl;
 
     input->print();
+    std::cout << "PRINT" << std::endl;
 
     D++;
 }
