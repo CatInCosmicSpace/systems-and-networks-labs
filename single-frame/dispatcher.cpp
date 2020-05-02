@@ -169,6 +169,7 @@ auto dispatcher::p6() {
 
     std::cout << "OUTPUT IS" << output << std::endl;
     auto rr_ns = (output->frame_header >> 1) & 0x07;
+    std::cout << "NEXT " << output << std::endl;
     auto rr_nr = rr_ns + 1;
 
     input->frame_header = (rr_nr << 5) | 1;
