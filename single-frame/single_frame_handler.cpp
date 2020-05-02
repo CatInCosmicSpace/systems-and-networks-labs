@@ -1,12 +1,12 @@
 #include <cmath>
 #include <iostream>
-#include "dispatcher.h"
+#include "single_frame_handler.h"
 #include "frame.h"
 
-dispatcher::dispatcher(int n1, int n2, int z1, int z2, int m) :
+single_frame_handler::single_frame_handler(int n1, int n2, int z1, int z2, int m) :
         D(1), N1(n1), N2(n2), m(m), Z1(z1), Z2(z2) {}
 
-void dispatcher::move_blocks(queue_characteristics *from, queue_characteristics *to, int length) {
+void single_frame_handler::move_blocks(queue_characteristics *from, queue_characteristics *to, int length) {
     if (!from || !to || length <= 0 || from->length == 0)
         return;
 
@@ -55,7 +55,7 @@ void dispatcher::move_blocks(queue_characteristics *from, queue_characteristics 
  *      <li> Переход к DISP1.
  * </ol></ul>
  */
-auto dispatcher::p1() {
+auto single_frame_handler::p1() {
     std::cout << "=== Switch to P1 ===" << std::endl;
     block *blocks = new block[N1];
 
@@ -82,7 +82,7 @@ auto dispatcher::p1() {
  *
  *
  */
-auto dispatcher::p2() {
+auto single_frame_handler::p2() {
     std::cout << "=== Switch to P2 ===" << std::endl;
     block *current = free->first;
     int n = m;
@@ -97,7 +97,7 @@ auto dispatcher::p2() {
 
 /*! \brief Программа P3. Перенос N2 пакетов данных из очереди Oсвоб в очередь Оп32.
  */
-auto dispatcher::p3() {
+auto single_frame_handler::p3() {
     std::cout << "=== Switch to P3 ===" << std::endl;
     p32 = new queue_characteristics();
     move_blocks(free, p32, N2);
@@ -112,7 +112,7 @@ auto dispatcher::p3() {
  * Сформировать КПК как результат сложения по модулю 2 заголовка кадра, заголовка пакета с байтом информационной части
  * пакета.
  */
-auto dispatcher::p4() {
+auto single_frame_handler::p4() {
     std::cout << "=== Switch to P4 ===" << std::endl;
     VS = Z1;
     VR = Z2;
@@ -145,7 +145,7 @@ auto dispatcher::p4() {
 /*! \brief Программа P5. Перенос информационного кадра, сформированного программой P4, в очередь повтора Оповт и
  * в регистр на передачу в канал.
  */
-auto dispatcher::p5() {
+auto single_frame_handler::p5() {
     std::cout << "=== Switch to P5 ===" << std::endl;
     repeat = new queue_characteristics();
     move_blocks(p32, repeat, 1);
@@ -163,7 +163,7 @@ auto dispatcher::p5() {
 /*! \brief Программа P6. Формирование принятого кадра “RR”, подтверждающего правильный прием переданного
  * на противоположную сторону информационного кадра “I”.
  */
-auto dispatcher::p6() {
+auto single_frame_handler::p6() {
     std::cout << "=== Switch to P6 ===" << std::endl;
     mode = 0;
 
@@ -183,7 +183,7 @@ auto dispatcher::p6() {
 /*! \brief Программа P7. Запись этого кадра RR с контрольно-проверочной комбинацией КПК в первый блок
  * очереди Освоб.
  */
-auto dispatcher::p7() {
+auto single_frame_handler::p7() {
     std::cout << "=== Switch to P7 ===" << std::endl;
 
     block *first = free->first;
@@ -195,7 +195,7 @@ auto dispatcher::p7() {
 
 /*! \brief Программа P8. Перенос принятого кадра RR из Освоб в очередь Окпм.
  */
-auto dispatcher::p8() {
+auto single_frame_handler::p8() {
     std::cout << "=== Switch to P8 ===" << std::endl;
     cmp = new queue_characteristics();
 
@@ -209,7 +209,7 @@ auto dispatcher::p8() {
 
 /*! \brief Программа P9. Проверка правильного приема переданного ранее кадра “I” и находящегося в очереди повтора Оповт.
  */
-auto dispatcher::p9() {
+auto single_frame_handler::p9() {
     std::cout << "=== Switch to P9 ===" << std::endl;
     unsigned char rr_ns = (repeat->first->_frame.frame_header >> 1) & 0x07;
     unsigned char rr_nr = (cmp->first->_frame.frame_header >> 5) & 0x07;
@@ -225,7 +225,7 @@ auto dispatcher::p9() {
 
 /*! \brief Программа P10. Считывание кадров “RR” из очереди Окпм и “I” из Оповт и установка их в очередь Освоб.
  */
-auto dispatcher::p10() {
+auto single_frame_handler::p10() {
     std::cout << "=== Switch to P10 ===" << std::endl;
     move_blocks(cmp, free, 1);
     free->last->_frame.clear();
@@ -243,7 +243,7 @@ auto dispatcher::p10() {
 
 /*! \brief Программа P11. Установление режима передачи очередного информационного кадра “I” в канал.
  */
-auto dispatcher::p11() {
+auto single_frame_handler::p11() {
     std::cout << "=== Switch to P11 ===" << std::endl;
     mode = 1;
 
@@ -255,7 +255,7 @@ auto dispatcher::p11() {
  * \details Цель работы: составление и отладка программы формирования и передачи в канал связи
  * одного информационного кадра.
  */
-void dispatcher::disp1() {
+void single_frame_handler::disp1() {
     std::cout << "=== Switch to DISP1 ===" << std::endl;
     auto need_break = false;
     while (!need_break) {
@@ -288,7 +288,7 @@ void dispatcher::disp1() {
  * \details Цель работы: составление и отладка программы приема неискаженного информационного кадра “RR”
  * в ответ на передачу кадра “I” при выполнении лабораторной работы №1.
  */
-void dispatcher::disp2() {
+void single_frame_handler::disp2() {
     std::cout << "=== Switch to DISP2 ===" << std::endl;
     auto need_break = false;
     while (!need_break) {

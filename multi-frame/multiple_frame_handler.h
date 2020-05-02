@@ -1,5 +1,5 @@
-#ifndef LABS_DISPATCHER_H
-#define LABS_DISPATCHER_H
+#ifndef LABS_MULTIPLE_FRAME_HANDLER_H
+#define LABS_MULTIPLE_FRAME_HANDLER_H
 
 #include "queue_characteristics.h"
 #include "input_frame.h"
@@ -19,9 +19,9 @@
  * \author Егорова Алена, группа ИУ8-104
  * \date 2020 год
 */
-class dispatcher {
+class multiple_frame_handler {
 public:
-    dispatcher(int N1, int N2, int Z1, int Z2, int Z3, int m, int cycles);
+    multiple_frame_handler(int N1, int N2, int Z1, int Z2, int Z3, int m, int cycles);
 
     void disp1();
 
@@ -77,4 +77,4 @@ private:
 };
 
 
-#endif //LABS_DISPATCHER_H
+#endif //LABS_MULTIPLE_FRAME_HANDLER_H

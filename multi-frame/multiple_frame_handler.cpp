@@ -1,14 +1,14 @@
 #include <bitset>
 #include <cmath>
 #include <iostream>
-#include "dispatcher.h"
+#include "multiple_frame_handler.h"
 #include "frame.h"
 
 
-dispatcher::dispatcher(int n1, int n2, int z1, int z2, int z3, int m, int cycles) :
+multiple_frame_handler::multiple_frame_handler(int n1, int n2, int z1, int z2, int z3, int m, int cycles) :
         D(1), N1(n1), N2(n2), m(m), Z1(z1), Z2(z2), Z3(z3), cycles(cycles) {}
 
-void dispatcher::move_blocks(queue_characteristics *from, queue_characteristics *to, int length) {
+void multiple_frame_handler::move_blocks(queue_characteristics *from, queue_characteristics *to, int length) {
     if (!from || !to || length <= 0 || from->length == 0)
         return;
 
@@ -53,7 +53,7 @@ void dispatcher::move_blocks(queue_characteristics *from, queue_characteristics 
  *      <li> Установление адресов связки в N1 свободных блоков.
  * </ol></ul>
  */
-auto dispatcher::p1() {
+auto multiple_frame_handler::p1() {
     std::cout << "=== Switch to P1 ===" << std::endl;
     block *blocks = new block[N1];
 
@@ -77,7 +77,7 @@ auto dispatcher::p1() {
  * \details Записать данные в информационную часть первых N2 свободных блоков очереди Освоб,
  * т.е. сформировать пакет данных в этих свободных блоках.
  */
-auto dispatcher::p2() {
+auto multiple_frame_handler::p2() {
     std::cout << "=== Switch to P3 ===" << std::endl;
     block *current = free->first;
     int n = m;
@@ -92,7 +92,7 @@ auto dispatcher::p2() {
 
 /*! \brief Программа P3. Перенос N2 пакетов данных из очереди Oсвоб в очередь Оп32.
  */
-auto dispatcher::p3() {
+auto multiple_frame_handler::p3() {
     std::cout << "=== Switch to P3 ===" << std::endl;
     p32 = new queue_characteristics();
     move_blocks(free, p32, N2);
@@ -103,7 +103,7 @@ auto dispatcher::p3() {
 /*! \brief Программа P4. Формирование массивов MСICL информационных кадров с входящими в него пакетами
  * в очереди пакетов Оп32 пакетов данных.
  */
-auto dispatcher::p4() {
+auto multiple_frame_handler::p4() {
     std::cout << "=== Switch to P4 ===" << std::endl;
     VS = Z1;
     VR = Z2;
@@ -143,7 +143,7 @@ auto dispatcher::p4() {
 /*! \brief Программа P5. Перенос информационных кадров MСICL, сформированных программой P4, в очередь повтора Оповт и
  * в регистр на передачу в канал..
  */
-auto dispatcher::p5() {
+auto multiple_frame_handler::p5() {
     std::cout << "=== Switch to P5 ===" << std::endl;
 
     repeat = new queue_characteristics();
@@ -166,7 +166,7 @@ auto dispatcher::p5() {
 
 /*! \brief Диспетчер 1. Программа формирования и передачи в канал связи одного информационного кадра
  */
-void dispatcher::disp1() {
+void multiple_frame_handler::disp1() {
     std::cout << "=== Switch to DISP1 ===" << std::endl;
     auto need_break = false;
     while (!need_break) {
@@ -197,7 +197,7 @@ void dispatcher::disp1() {
 /*! \brief Программа P6. Фформирование принятого кадра “REJ”, требующего передачу
  * на противоположную сторону кадров “I” с очереди повтора Оповт.
  */
-auto dispatcher::p6() {
+auto multiple_frame_handler::p6() {
     std::cout << "=== Switch to P6 ===" << std::endl;
     mode = 0;
 
@@ -215,7 +215,7 @@ auto dispatcher::p6() {
 /*! \brief запись этого кадра “REJ”, с контрольно-проверочной комбинацией КПК в первый массив блока очереди Освоб.
  * Проверка безошибочного приема кадра REJ с канала связи.
  */
-auto dispatcher::p7() {
+auto multiple_frame_handler::p7() {
     std::cout << "=== Switch to P7 ===" << std::endl;
 
     block *first = free->first;
@@ -228,7 +228,7 @@ auto dispatcher::p7() {
 /*! \brief перенос кадра REJ (без КПК), поступившего неискаженным, из Освоб в очередь принятых с канала кадров Окпм.
  * Установление режима передачи в канал информационного кадра “I” c очереди повтора Оповт.
  */
-auto dispatcher::p8() {
+auto multiple_frame_handler::p8() {
     std::cout << "=== Switch to P8 ===" << std::endl;
     cmp = new queue_characteristics();
     move_blocks(free, cmp, 1);
@@ -243,7 +243,7 @@ auto dispatcher::p8() {
 /*! \brief Программа P9. поставить кадр REJ с начальным адресом массива из очереди принятых с канала кадров
  * Окпм А(N2+1) в конец очереди свободных блоков Освоб.
  */
-auto dispatcher::p9() {
+auto multiple_frame_handler::p9() {
     std::cout << "=== Switch to P9 ===" << std::endl;
     move_blocks(cmp, free, 1);
     cmp->clear();
@@ -253,7 +253,7 @@ auto dispatcher::p9() {
 
 /*! \brief Программа P10. Программа проверки необходимости стирания и повторной передачи кадров “I” с очереди повтора Оповт.
  */
-auto dispatcher::p10() {
+auto multiple_frame_handler::p10() {
     std::cout << "=== Switch to P10 ===" << std::endl;
     if (((tadr->_frame.frame_header >> 1) & 0x07) < CNR) {
         D = 11;
@@ -264,7 +264,7 @@ auto dispatcher::p10() {
 
 /*! \brief Программа P11. программа стирания кадра (кадров) “I” с очереди повтора Оповт.
  */
-auto dispatcher::p11() {
+auto multiple_frame_handler::p11() {
     std::cout << "=== Switch to P11 ===" << std::endl;
 
     move_blocks(repeat, free, 1);
@@ -280,7 +280,7 @@ auto dispatcher::p11() {
 
 /*! \brief Программа P12. программа передачи в канал кадров “I” с очереди повтора Оповт.
  */
-auto dispatcher::p12() {
+auto multiple_frame_handler::p12() {
     std::cout << "=== Switch to P12 ===" << std::endl;
     output = &(tadr->_frame);
 
@@ -296,7 +296,7 @@ auto dispatcher::p12() {
 
 /*! \brief Диспетчер 2. Программа приема c канала кадра “RR”
  */
-void dispatcher::disp2() {
+void multiple_frame_handler::disp2() {
     std::cout << "=== Switch to DISP2 ===" << std::endl;
     auto need_break = false;
     while (!need_break) {
@@ -324,7 +324,7 @@ void dispatcher::disp2() {
 
 /*! \brief Диспетчер 3. Программа приема c канала кадра “RR”
  */
-void dispatcher::disp3() {
+void multiple_frame_handler::disp3() {
     std::cout << "=== Switch to DISP3 ===" << std::endl;
     tadr = free->first;
     auto need_break = false;

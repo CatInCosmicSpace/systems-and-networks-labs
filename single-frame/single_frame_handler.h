@@ -1,5 +1,5 @@
-#ifndef LABS_DISPATCHER_H
-#define LABS_DISPATCHER_H
+#ifndef LABS_SINGLE_FRAME_HANDLER_H
+#define LABS_SINGLE_FRAME_HANDLER_H
 
 #include "queue_characteristics.h"
 #include "input_frame.h"
@@ -18,9 +18,9 @@
  * \author Егорова Алена, группа ИУ8-104
  * \date 2020 год
 */
-class dispatcher {
+class single_frame_handler {
 public:
-    dispatcher(int N1, int N2, int Z1, int Z2, int m);
+    single_frame_handler(int N1, int N2, int Z1, int Z2, int m);
 
     void disp1();
 
@@ -74,4 +74,4 @@ private:
 };
 
 
-#endif //LABS_DISPATCHER_H
+#endif //LABS_SINGLE_FRAME_HANDLER_H
