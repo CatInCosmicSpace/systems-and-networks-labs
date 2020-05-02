@@ -1,11 +1,10 @@
-#ifndef LABS12_DISPATCHER_H
-#define LABS12_DISPATCHER_H
+#ifndef LABS_DISPATCHER_H
+#define LABS_DISPATCHER_H
 
-#include <queue>
-#include "block.h"
+#include "queue_characteristics.h"
 #include "receiver_ready.h"
 
-/*! \brief Диспетчер 1.
+/*! \brief Основная программа обработки передачи одного информационного кадра.
  *
  * \details
  * <ul>
@@ -22,31 +21,30 @@
 class dispatcher {
 public:
     dispatcher(int N1, int N2, int Z1, int Z2, int m);
+
     void disp1();
     void disp2();
 private:
     size_t N1, N2, Z1, Z2, m;
-    size_t D;
+    size_t D = 1;
     size_t VS; /*!< Переменная передачи состояния */
     size_t VR; /*!< Переменная состояния приёма */
     size_t NS; /*!< Порядковый номер передаваемого кадра I. N(S) устанавливается равным V(S) */
     size_t NR; /*!< Порядковый номер I-кадра, ожидаемого на приём */
 
-    std::queue<block*> free;    /*!< Очередь свободных блоков */
+    queue_characteristics* free;   /*!< Очередь свободных блоков */
+    queue_characteristics* p32;    /*!< Очередь пакетов на передачу с сетевого уровня на канальный уровень */
+    queue_characteristics* repeat; /*!< Очередь информационных кадров на случай необходимости повторной передачи кадров в канал */
+    queue_characteristics* cmp;     /*!< Очередь всех принятых кадров с канала */
 
-    std::queue<block*> p32;     /*!< Очередь пакетов на передачу с сетевого уровня на канальный уровень */
-    std::queue<block*> p23;     /*!< Очередь пакетов на передачу с канального уровня на сетевой уровень */
-
-    std::queue<block*> repeat;  /*!< Очередь информационных кадров на случай необходимости повторной передачи кадров в канал */
-
-    std::queue<block*> output;  /*!< Регистр выходных пакетов */
-    std::queue<block*> cmp;     /*!< Очередь всех принятых кадров с канала */
+    frame* output;  /*!< Регистр выходных пакетов */
+    receiver_ready* input;
 
     std::vector<block> blocks;
 
-    receiver_ready rr;
+    void move_blocks(queue_characteristics*, queue_characteristics*, int);
 
-    bool mode;
+    uint8_t mode = 0;
 
     // LAB1
     auto p1();
@@ -65,4 +63,4 @@ private:
 };
 
 
-#endif //LABS12_DISPATCHER_H
+#endif //LABS_DISPATCHER_H
