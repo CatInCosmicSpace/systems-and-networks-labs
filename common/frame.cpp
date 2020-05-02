@@ -2,6 +2,7 @@
 #include <bitset>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include "frame.h"
 
 frame::frame() {
