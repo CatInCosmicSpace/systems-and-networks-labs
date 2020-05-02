@@ -19,25 +19,25 @@ void dispatcher::move_blocks(queue_characteristics *from, queue_characteristics 
 
     block *last_to_move = from->first;
     for (int i = 0; i < to_move - 1; ++i) {
-        last_to_move = last_to_move->next;
+        last_to_move = last_to_move->_next;
     }
 
     from->length -= to_move;
-    from->first = last_to_move->next;
+    from->first = last_to_move->_next;
 
     if (from->length != 0) {
-        from->first->previous = nullptr;
+        from->first->_previous = nullptr;
     } else {
         from->last = nullptr;
     }
 
-    last_to_move->next = nullptr;
+    last_to_move->_next = nullptr;
 
     if (to->length == 0) {
         to->first = first_to_move;
     } else {
-        to->last->next = first_to_move;
-        first_to_move->previous = to->last;
+        to->last->_next = first_to_move;
+        first_to_move->_previous = to->last;
     }
 
     to->last = last_to_move;
@@ -59,14 +59,14 @@ auto dispatcher::p1() {
 
     free = new queue_characteristics(&blocks[0], &blocks[N1 - 1], N1);
 
-    blocks[0].previous = nullptr;
-    blocks[0].next = &blocks[1];
-    blocks[N1 - 1].previous = &blocks[N1 - 2];
-    blocks[N1 - 1].next = nullptr;
+    blocks[0]._previous = nullptr;
+    blocks[0]._next = &blocks[1];
+    blocks[N1 - 1]._previous = &blocks[N1 - 2];
+    blocks[N1 - 1]._next = nullptr;
 
     for (int i = 1; i < N1 - 1; ++i) {
-        blocks[i].previous = &blocks[i - 1];
-        blocks[i].next = &blocks[i + 1];
+        blocks[i]._previous = &blocks[i - 1];
+        blocks[i]._next = &blocks[i + 1];
     }
 
     D++;
@@ -83,8 +83,8 @@ auto dispatcher::p2() {
     int n = m;
     for (int i = 0; i < N2; ++i) {
         ++n;
-        std::fill_n(current->frame.data, 128, n);
-        current = current->next;
+        std::fill_n(current->_frame.data, 128, n);
+        current = current->_next;
     }
 
     D++;
@@ -114,7 +114,7 @@ auto dispatcher::p4() {
         NS = VS;
         ++VS;
 
-        auto frame = &(current->frame);
+        auto frame = &(current->_frame);
         frame->frame_header = (0x0E) & (NS << 1) | (0xE0) & (VR << 5);
 
         uint8_t high = 0;
@@ -134,7 +134,7 @@ auto dispatcher::p4() {
         frame->control[0] = high;
         frame->control[1] = low;
 
-        current = current->next;
+        current = current->_next;
     }
 
     D++;
@@ -149,7 +149,7 @@ auto dispatcher::p5() {
     repeat = new queue_characteristics();
     move_blocks(p32, repeat, cycles);
     mode = 1;
-    output = &(repeat->first->frame);
+    output = &(repeat->first->_frame);
 
     repeat->print();
     output->print();
@@ -157,8 +157,8 @@ auto dispatcher::p5() {
     block *current = repeat->first;
     for (int i = 1; current != nullptr; ++i) {
         std::cout << "Frame #" << i << std::endl;
-        current->frame.print();
-        current = current->next;
+        current->_frame.print();
+        current = current->_next;
     }
 
     D++;
@@ -219,8 +219,8 @@ auto dispatcher::p7() {
     std::cout << "=== Switch to P7 ===" << std::endl;
 
     block *first = free->first;
-    first->frame.clear();
-    first->frame.frame_header = input->frame_header;
+    first->_frame.clear();
+    first->_frame.frame_header = input->frame_header;
 
     D++;
 }
@@ -255,7 +255,7 @@ auto dispatcher::p9() {
  */
 auto dispatcher::p10() {
     std::cout << "=== Switch to P10 ===" << std::endl;
-    if (((tadr->frame.frame_header >> 1) & 0x07) < CNR) {
+    if (((tadr->_frame.frame_header >> 1) & 0x07) < CNR) {
         D = 11;
     } else {
         D = 12;
@@ -269,8 +269,8 @@ auto dispatcher::p11() {
 
     move_blocks(repeat, free, 1);
 
-    std::fill_n(free->last->frame.data, 128, 0);
-    std::fill_n(free->last->frame.control, 2, 0);
+    std::fill_n(free->last->_frame.data, 128, 0);
+    std::fill_n(free->last->_frame.control, 2, 0);
 
     tadr = repeat->first;
     ++K;
@@ -282,13 +282,13 @@ auto dispatcher::p11() {
  */
 auto dispatcher::p12() {
     std::cout << "=== Switch to P12 ===" << std::endl;
-    output = &(tadr->frame);
+    output = &(tadr->_frame);
 
     if (K == cycles) {
         output->print();
         D++;
     } else {
-        tadr = tadr->next;
+        tadr = tadr->_next;
         ++K;
         D = 10;
     }

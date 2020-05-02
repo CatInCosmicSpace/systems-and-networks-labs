@@ -17,25 +17,25 @@ void dispatcher::move_blocks(queue_characteristics *from, queue_characteristics 
 
     block *last_to_move = from->first;
     for (int i = 0; i < to_move - 1; ++i) {
-        last_to_move = last_to_move->next;
+        last_to_move = last_to_move->_next;
     }
 
     from->length -= to_move;
-    from->first = last_to_move->next;
+    from->first = last_to_move->_next;
 
     if (from->length != 0) {
-        from->first->previous = nullptr;
+        from->first->_previous = nullptr;
     } else {
         from->last = nullptr;
     }
 
-    last_to_move->next = nullptr;
+    last_to_move->_next = nullptr;
 
     if (to->length == 0) {
         to->first = first_to_move;
     } else {
-        to->last->next = first_to_move;
-        first_to_move->previous = to->last;
+        to->last->_next = first_to_move;
+        first_to_move->_previous = to->last;
     }
 
     to->last = last_to_move;
@@ -61,14 +61,14 @@ auto dispatcher::p1() {
 
     free = new queue_characteristics(&blocks[0], &blocks[N1 - 1], N1);
 
-    blocks[0].previous = nullptr;
-    blocks[0].next = &blocks[1];
-    blocks[N1 - 1].previous = &blocks[N1 - 2];
-    blocks[N1 - 1].next = nullptr;
+    blocks[0]._previous = nullptr;
+    blocks[0]._next = &blocks[1];
+    blocks[N1 - 1]._previous = &blocks[N1 - 2];
+    blocks[N1 - 1]._next = nullptr;
 
     for (int i = 1; i < N1 - 1; ++i) {
-        blocks[i].previous = &blocks[i - 1];
-        blocks[i].next = &blocks[i + 1];
+        blocks[i]._previous = &blocks[i - 1];
+        blocks[i]._next = &blocks[i + 1];
     }
 
     D++;
@@ -88,8 +88,8 @@ auto dispatcher::p2() {
     int n = m;
     for (int i = 0; i < N2; ++i) {
         ++n;
-        std::fill_n(current->frame.data, 128, n);
-        current = current->next;
+        std::fill_n(current->_frame.data, 128, n);
+        current = current->_next;
     }
 
     D++;
@@ -119,7 +119,7 @@ auto dispatcher::p4() {
     NS = VS;
     VS++;
 
-    auto frame = &(p32->first->frame);
+    auto frame = &(p32->first->_frame);
     frame->frame_header = (0x0E) & (NS << 1) | (0xE0) & (VR << 5);
 
     uint8_t high = 0;
@@ -150,14 +150,14 @@ auto dispatcher::p5() {
     repeat = new queue_characteristics();
     move_blocks(p32, repeat, 1);
     mode = 1;
-    output = &(repeat->first->frame);
+    output = &(repeat->first->_frame);
 
     std::cout << "=== Switch to P1 ===" << std::endl;
     std::cout << "Output register:" << std::endl;
     output->print();
     std::cout << "=== Switch to P1 ===" << std::endl;
     std::cout << "Repeat queue:" << std::endl;
-    repeat->first->frame.print();
+    repeat->first->_frame.print();
 
     D++;
 }
@@ -187,8 +187,8 @@ auto dispatcher::p7() {
     std::cout << "=== Switch to P7 ===" << std::endl;
 
     block *first = free->first;
-    first->frame.clear();
-    first->frame.frame_header = input->frame_header;
+    first->_frame.clear();
+    first->_frame.frame_header = input->frame_header;
 
     D++;
 }
@@ -211,8 +211,8 @@ auto dispatcher::p8() {
  */
 auto dispatcher::p9() {
     std::cout << "=== Switch to P9 ===" << std::endl;
-    unsigned char rr_ns = (repeat->first->frame.frame_header >> 1) & 0x07;
-    unsigned char rr_nr = (cmp->first->frame.frame_header >> 5) & 0x07;
+    unsigned char rr_ns = (repeat->first->_frame.frame_header >> 1) & 0x07;
+    unsigned char rr_nr = (cmp->first->_frame.frame_header >> 5) & 0x07;
 
     std::cout << "NS = " << (int) rr_ns << std::endl;
     std::cout << "NR = " << (int) rr_nr << std::endl;
@@ -228,14 +228,14 @@ auto dispatcher::p9() {
 auto dispatcher::p10() {
     std::cout << "=== Switch to P10 ===" << std::endl;
     move_blocks(cmp, free, 1);
-    free->last->frame.clear();
+    free->last->_frame.clear();
     move_blocks(repeat, free, 1);
 
     repeat->clear();
     cmp->clear();
 
     free->print();
-    free->last->previous->print();
+    free->last->_previous->print();
     free->last->print();
 
     D++;
